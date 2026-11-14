@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi.ui.screens.settings
 
 import androidx.compose.foundation.Image
@@ -155,7 +150,7 @@ fun AboutScreen(
                 },
                 trailingContent = {
                     androidx.compose.material3.IconButton(
-                        onClick = { uriHandler.safeOpenUri(context, "https://github.com/vivizzz007/vivi-music") },
+                        onClick = { uriHandler.safeOpenUri(context, "https://github.com/i7rvn/Spoty") },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer
                         )
@@ -227,7 +222,7 @@ fun AboutScreen(
                             contentScale = ContentScale.Crop
                         )
                     },
-                    onClick = { uriHandler.safeOpenUri(context, "https://github.com/vivizzz007") },
+                    onClick = { uriHandler.safeOpenUri(context, "https://github.com/i7rvn") },
                     isExternalLink = true
                 ),
                 Material3SettingsItem(
@@ -257,7 +252,7 @@ fun AboutScreen(
                             Text("...")
                         }
                     },
-                    onClick = { uriHandler.safeOpenUri(context, "https://github.com/vivizzz007/vivi-music") },
+                    onClick = { uriHandler.safeOpenUri(context, "https://github.com/i7rvn/Spoty") },
                     isExternalLink = true
                 ),
                 Material3SettingsItem(
@@ -269,7 +264,13 @@ fun AboutScreen(
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.telegram),
                     title = { Text(stringResource(R.string.telegram_channel)) },
-                    onClick = { uriHandler.safeOpenUri(context, "https://t.me/vivimusicapp") },
+                    onClick = { uriHandler.safeOpenUri(context, "https://t.me/vrni2") },
+                    isExternalLink = true
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.discord),
+                    title = { Text("Discord") },
+                    onClick = { uriHandler.safeOpenUri(context, "https://discord.gg/z3shk76yN") },
                     isExternalLink = true
                 )
             )
@@ -310,7 +311,7 @@ fun AboutScreen(
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.license_vivi),
                     title = { Text(stringResource(R.string.license)) },
-                    onClick = { uriHandler.safeOpenUri(context, "https://github.com/vivizzz007/vivi-music/blob/main/LICENSE") },
+                    onClick = { uriHandler.safeOpenUri(context, "https://github.com/i7rvn/Spoty/blob/main/LICENSE") },
                     isExternalLink = true
                 ),
             )
@@ -320,10 +321,7 @@ fun AboutScreen(
 
     if (showSupportDialog) {
         SupportDialog(
-            onDismiss = { showSupportDialog = false },
-            onPayPal = { uriHandler.safeOpenUri(context, "https://www.paypal.me/vividhpashokan") },
-            onUPI = { uriHandler.safeOpenUri(context, "upi://pay?pa=vividhpashokan@axl&pn=Vividh P Ashokan") },
-            onCoffee = { uriHandler.safeOpenUri(context, "https://ko-fi.com/vividhpashokan") }
+            onDismiss = { showSupportDialog = false }
         )
     }
 
@@ -345,12 +343,26 @@ fun AboutScreen(
 
 
 @Composable
+private data class CryptoPaymentMethod(
+    val badge: String,
+    val label: String,
+    val value: String
+)
+
+private val cryptoPaymentMethods = listOf(
+    CryptoPaymentMethod("◎", "Solana (SOL)", "8RVQJueGCFCrKCvhW5nDsu1EySq1wLXXw4DgfTwpMPdL"),
+    CryptoPaymentMethod("T", "TRON (TRC20)", "TTepvaNAxXFcdhZ51iLQ2dNBtSfTLewxUK"),
+    CryptoPaymentMethod("₿", "Bitcoin (BEP20)", "0xe078382c0dc52e132adf4b948aecdef7e9d9ee1f"),
+    CryptoPaymentMethod("B", "Binance ID", "811611838"),
+    CryptoPaymentMethod("Y", "Bybit ID", "459904167"),
+)
+
+@Composable
 private fun SupportDialog(
     onDismiss: () -> Unit,
-    onPayPal: () -> Unit,
-    onUPI: () -> Unit,
-    onCoffee: () -> Unit
 ) {
+    val context = LocalContext.current
+
     DialogBasic(
         show = true,
         title = "Donate",
@@ -358,34 +370,68 @@ private fun SupportDialog(
         showOnlyDismissAction = true,
         onDismiss = onDismiss
     ) {
-        ExpressiveSettingGroup(
-            modifier = Modifier.padding(horizontal = 14.dp),
-            items = listOf(
-                Material3SettingsItem(
-                    leadingContent = { 
-                        Icon(painterResource(R.drawable.paypal), contentDescription = null, modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary)
-                    },
-                    title = { Text("PayPal") },
-                    description = { Text("paypal.me/vividhpashokan") },
-                    onClick = { onPayPal(); onDismiss() }
-                ),
-                Material3SettingsItem(
-                    leadingContent = { 
-                        Icon(painterResource(R.drawable.currency_rupee_upi), contentDescription = null, modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary)
-                    },
-                    title = { Text("UPI") },
-                    description = { Text("vividhpashokan@axl") },
-                    onClick = { onUPI(); onDismiss() }
-                ),
-                Material3SettingsItem(
-                    leadingContent = { 
-                        Icon(painterResource(R.drawable.buymeacoffee), contentDescription = null, modifier = Modifier.size(24.dp), tint = MaterialTheme.colorScheme.primary)
-                    },
-                    title = { Text("Ko-fi") },
-                    description = { Text("ko-fi.com/vividhpashokan") },
-                    onClick = { onCoffee(); onDismiss() }
-                )
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 14.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                text = "⚠️ Select the correct network before sending. Payments sent on the wrong network may be lost.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
-        )
+
+            cryptoPaymentMethods.forEach { method ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.secondaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = method.badge,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = method.label,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = method.value,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            clipboard.setPrimaryClip(android.content.ClipData.newPlainText(method.label, method.value))
+                            android.widget.Toast.makeText(context, "${method.label} copied", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.content_copy),
+                            contentDescription = "Copy ${method.label}",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+        }
     }
 }

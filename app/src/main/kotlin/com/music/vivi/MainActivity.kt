@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi
 
 import android.Manifest
@@ -591,7 +586,7 @@ class MainActivity : ComponentActivity() {
                     onDismiss = { setLastSeenStarPromptVersion(currentVersion) },
                     onConfirm = {
                         setLastSeenStarPromptVersion(currentVersion)
-                        uriHandler.openUri("https://github.com/vivizzz007/vivi-music")
+                        uriHandler.openUri("https://github.com/i7rvn/Spoty")
                     },
                     onCancel = { setLastSeenStarPromptVersion(currentVersion) },
                     content = {
@@ -655,25 +650,18 @@ class MainActivity : ComponentActivity() {
                                 val iconTint = MaterialTheme.colorScheme.onSurfaceVariant
                                 
                                 IconButton(
-                                    onClick = { uriHandler.openUri("https://ko-fi.com/vivizzz007") },
+                                    onClick = { uriHandler.openUri("https://t.me/vrni2") },
                                     modifier = btnModifier,
                                     colors = btnColors
                                 ) {
-                                    Icon(painter = painterResource(R.drawable.buymeacoffee), contentDescription = "Buy Me A Coffee", tint = iconTint)
+                                    Icon(painter = painterResource(R.drawable.telegram), contentDescription = "Telegram", tint = iconTint)
                                 }
                                 IconButton(
-                                    onClick = { uriHandler.openUri("https://paypal.me/vivizzz007") },
+                                    onClick = { uriHandler.openUri("https://discord.gg/z3shk76yN") },
                                     modifier = btnModifier,
                                     colors = btnColors
                                 ) {
-                                    Icon(painter = painterResource(R.drawable.paypal), contentDescription = "PayPal", tint = iconTint)
-                                }
-                                IconButton(
-                                    onClick = { uriHandler.openUri("upi://pay?pa=vivizzz007@upi") },
-                                    modifier = btnModifier,
-                                    colors = btnColors
-                                ) {
-                                    Icon(painter = painterResource(R.drawable.currency_rupee_upi), contentDescription = "UPI", tint = iconTint)
+                                    Icon(painter = painterResource(R.drawable.discord), contentDescription = "Discord", tint = iconTint)
                                 }
                             }
                         }

@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi.ui.component
 
 import android.annotation.SuppressLint
@@ -2779,7 +2774,7 @@ fun Lyrics(
 
                     Text(text = stringResource(id = R.string.text_color), style = MaterialTheme.typography.titleMedium)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(vertical = 8.dp)) {
-                        (paletteColors + listOf(Color.White, Color.Black, Color(0xFF1DB954))).distinct().take(8).forEach { color ->
+                        (paletteColors + listOf(Color.White, Color.Black, Color(0xFF8A5CFF))).distinct().take(8).forEach { color ->
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)
@@ -2796,7 +2791,7 @@ fun Lyrics(
 
                     Text(text = stringResource(id = R.string.secondary_text_color), style = MaterialTheme.typography.titleMedium)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(vertical = 8.dp)) {
-                        (paletteColors.map { it.copy(alpha = 0.7f) } + listOf(Color.White.copy(alpha = 0.7f), Color.Black.copy(alpha = 0.7f), Color(0xFF1DB954))).distinct().take(8).forEach { color ->
+                        (paletteColors.map { it.copy(alpha = 0.7f) } + listOf(Color.White.copy(alpha = 0.7f), Color.Black.copy(alpha = 0.7f), Color(0xFF8A5CFF))).distinct().take(8).forEach { color ->
                             Box(
                                 modifier = Modifier
                                     .size(32.dp)

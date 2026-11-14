@@ -1,7 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
 package com.music.vivi.github.network
 
 import io.ktor.client.HttpClient
@@ -66,7 +62,7 @@ class GitHubService @Inject constructor() {
         }
     }
 
-    suspend fun isRepoStarred(token: String, owner: String = "vivizzz007", repo: String = "vivi-music"): Boolean {
+    suspend fun isRepoStarred(token: String, owner: String = "i7rvn", repo: String = "Spoty"): Boolean {
         return try {
             val response: HttpResponse = client.get("https://api.github.com/user/starred/$owner/$repo") {
                 header("Authorization", "Bearer $token")
@@ -80,7 +76,7 @@ class GitHubService @Inject constructor() {
         }
     }
 
-    suspend fun starRepo(token: String, owner: String = "vivizzz007", repo: String = "vivi-music"): Boolean {
+    suspend fun starRepo(token: String, owner: String = "i7rvn", repo: String = "Spoty"): Boolean {
         return try {
             val response = client.put("https://api.github.com/user/starred/$owner/$repo") {
                 header("Authorization", "Bearer $token")
@@ -94,7 +90,7 @@ class GitHubService @Inject constructor() {
         }
     }
     
-    suspend fun unstarRepo(token: String, owner: String = "vivizzz007", repo: String = "vivi-music"): Boolean {
+    suspend fun unstarRepo(token: String, owner: String = "i7rvn", repo: String = "Spoty"): Boolean {
         return try {
             val response = client.delete("https://api.github.com/user/starred/$owner/$repo") {
                 header("Authorization", "Bearer $token")
@@ -110,7 +106,7 @@ class GitHubService @Inject constructor() {
 
     suspend fun getRepoDetails(): GitHubRepoDto? {
         return try {
-            val response = client.get("https://api.github.com/repos/vivizzz007/vivi-music") {
+            val response = client.get("https://api.github.com/repos/i7rvn/Spoty") {
                 header("Accept", "application/vnd.github+json")
                 header("X-GitHub-Api-Version", "2022-11-28")
             }

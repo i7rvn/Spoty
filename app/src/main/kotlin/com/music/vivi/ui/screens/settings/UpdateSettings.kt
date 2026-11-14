@@ -64,11 +64,6 @@ import com.music.vivi.vivimusic.updater.checkForUpdate
 
 //here b5.0.1 must be used for the beta tag
 
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 
 
 

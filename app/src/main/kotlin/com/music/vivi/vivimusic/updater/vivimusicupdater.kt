@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi.vivimusic.updater
 
 
@@ -314,8 +309,8 @@ fun UpdateScreen(navController: NavHostController) {
                                                     ContextCompat.startActivity(context, installIntent, null)
                                                 }
                                             } else {
-                                                val targetApkName = if (BuildConfig.FLAVOR.contains("foss", ignoreCase = true)) "izzydroid-universal-foss-release.apk" else "vivi.apk"
-                                                val urlToDownload = currentStatus.apkUrl ?: "https://github.com/vivizzz007/vivi-music/releases/download/${currentStatus.version}/$targetApkName"
+                                                val targetApkName = if (BuildConfig.FLAVOR.contains("foss", ignoreCase = true)) "izzydroid-universal-foss-release.apk" else "spoty.apk"
+                                                val urlToDownload = currentStatus.apkUrl ?: "https://github.com/i7rvn/Spoty/releases/download/${currentStatus.version}/$targetApkName"
                                                 
                                                 if (BuildConfig.FLAVOR.contains("foss", ignoreCase = true)) {
                                                     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(urlToDownload))
@@ -806,7 +801,7 @@ suspend fun checkForUpdate(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            val url = URL("https://api.github.com/repos/vivizzz007/vivi-music/releases")
+            val url = URL("https://api.github.com/repos/i7rvn/Spoty/releases")
             val json = url.openStream().bufferedReader().use { it.readText() }
             val releases = JSONArray(json)
             
@@ -878,7 +873,7 @@ suspend fun checkForUpdate(
                     var imageUrl: String? = null
                     try {
                         val changelogUrl =
-                            URL("https://github.com/vivizzz007/vivi-music/releases/download/$tagWithPrefix/changelog.json?t=${System.currentTimeMillis()}")
+                            URL("https://github.com/i7rvn/Spoty/releases/download/$tagWithPrefix/changelog.json?t=${System.currentTimeMillis()}")
                         val changelogJson = changelogUrl.openStream().bufferedReader().use { it.readText() }
                         val changelogData = JSONObject(changelogJson)
 
@@ -923,7 +918,7 @@ suspend fun checkForUpdate(
 
                     var apkSizeInMB = ""
                     var apkDownloadUrl = ""
-                    val expectedApkName = if (BuildConfig.FLAVOR.contains("foss", ignoreCase = true)) "izzydroid-universal-foss-release.apk" else "vivi.apk"
+                    val expectedApkName = if (BuildConfig.FLAVOR.contains("foss", ignoreCase = true)) "izzydroid-universal-foss-release.apk" else "spoty.apk"
                     for (j in 0 until assets.length()) {
                         val asset = assets.getJSONObject(j)
                         val assetName = asset.getString("name")

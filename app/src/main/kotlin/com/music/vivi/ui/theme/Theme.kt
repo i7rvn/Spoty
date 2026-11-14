@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi.ui.theme
 
 import android.graphics.Bitmap
@@ -37,7 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import android.graphics.Typeface as AndroidTypeface
 import androidx.compose.ui.text.font.Typeface as ComposeTypeface
 
-val DefaultThemeColor = Color(0xFFED5564)
+val DefaultThemeColor = Color(0xFF8A5CFF)
 
 @Composable
 fun vivimusicTheme(

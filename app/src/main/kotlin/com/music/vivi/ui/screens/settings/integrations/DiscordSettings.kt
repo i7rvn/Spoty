@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi.ui.screens.settings.integrations
 
 import android.content.Intent
@@ -910,7 +905,7 @@ fun RichPresence(
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://github.com/vivizzz007/vivi-music".toUri()
+                            "https://github.com/i7rvn/Spoty".toUri()
                         )
                         context.startActivity(intent)
                     },

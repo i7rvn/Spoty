@@ -1,7 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
 package com.music.vivi.vivimusic.updater.downloadmanager
 
 import android.content.Context
@@ -55,7 +51,7 @@ class CustomDownloadManager {
                     downloadDir.mkdirs()
                 }
 
-                val outputFile = File(downloadDir, "vivi.apk")
+                val outputFile = File(downloadDir, "spoty.apk")
                 val outputStream = FileOutputStream(outputFile)
 
                 val buffer = ByteArray(8192)

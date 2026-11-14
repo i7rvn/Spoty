@@ -1,7 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
 @file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 
 package com.music.vivi
@@ -601,7 +597,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 )
                             },
                             onClick = {
-                                uriHandler.safeOpenUri(context, "https://github.com/vivizzz007/vivi-music")
+                                uriHandler.safeOpenUri(context, "https://github.com/i7rvn/Spoty")
                             }
                         )
 
@@ -622,7 +618,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 )
                             },
                             onClick = {
-                                uriHandler.safeOpenUri(context, "https://t.me/vivimusicapp")
+                                uriHandler.safeOpenUri(context, "https://t.me/vrni2")
                             }
                         )
 

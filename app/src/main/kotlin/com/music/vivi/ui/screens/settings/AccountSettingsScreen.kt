@@ -1,8 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
-
 package com.music.vivi.ui.screens.settings
 
 import androidx.compose.foundation.background
@@ -464,7 +459,7 @@ fun AccountSettingsScreen(
             ) {
                 Surface(
                     onClick = {
-                        uriHandler.safeOpenUri(context, "https://github.com/vivizzz007/vivi-music/issues")
+                        uriHandler.safeOpenUri(context, "https://github.com/i7rvn/Spoty/issues")
                     },
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceContainerHigh,

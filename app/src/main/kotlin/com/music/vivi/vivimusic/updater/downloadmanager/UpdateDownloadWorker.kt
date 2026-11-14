@@ -1,7 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
 package com.music.vivi.vivimusic.updater.downloadmanager
 
 import android.content.Context
@@ -73,7 +69,7 @@ class UpdateDownloadWorker(private val context: Context, workerParams: WorkerPar
             }
 
             val isZip = apkUrl.contains("nightly.link") || apkUrl.endsWith(".zip")
-            val downloadFile = if (isZip) File(downloadDir, "vivi_temp.zip") else File(downloadDir, "vivi.apk")
+            val downloadFile = if (isZip) File(downloadDir, "spoty_temp.zip") else File(downloadDir, "spoty.apk")
             val outputStream = FileOutputStream(downloadFile)
 
             val buffer = ByteArray(8192)
@@ -109,7 +105,7 @@ class UpdateDownloadWorker(private val context: Context, workerParams: WorkerPar
             connection.disconnect()
 
             val finalFile = if (isZip) {
-                val targetApkFile = File(downloadDir, "vivi.apk")
+                val targetApkFile = File(downloadDir, "spoty.apk")
                 var extracted = false
                 try {
                     ZipInputStream(downloadFile.inputStream()).use { zis ->

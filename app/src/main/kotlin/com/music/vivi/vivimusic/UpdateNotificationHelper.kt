@@ -1,7 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
 package com.music.vivi.vivimusic
 
 import android.Manifest
@@ -42,9 +38,9 @@ object UpdateNotificationHelper {
 
         // Direct download URL format from vivimusicupdater - use the full tag (vX.X.X or bX.X.X) or nightly link
         val apkUrl = if (versionName.contains("nightly", ignoreCase = true)) {
-            "https://nightly.link/vivizzz007/vivi-music/workflows/nightly.yml/main/vivi-music-gms-nightly.zip"
+            "https://nightly.link/i7rvn/Spoty/workflows/nightly.yml/main/spoty-gms-nightly.zip"
         } else {
-            "https://github.com/vivizzz007/vivi-music/releases/download/$versionName/vivi.apk"
+            "https://github.com/i7rvn/Spoty/releases/download/$versionName/spoty.apk"
         }
         val intent = Intent(Intent.ACTION_VIEW, apkUrl.toUri())
 

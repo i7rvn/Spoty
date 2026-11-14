@@ -1,7 +1,3 @@
-/**
- * vivimusic Project (C) 2026
- * Licensed under GPL-3.0 | See git history for contributors
- */
 package com.music.vivi.vivimusic.changelog
 
 
@@ -201,7 +197,7 @@ fun ChangelogScreen(
                         showingCached = true
                     }
                 } else {
-                    val changelogUrl = URL("https://github.com/vivizzz007/vivi-music/releases/download/$tag/changelog.json")
+                    val changelogUrl = URL("https://github.com/i7rvn/Spoty/releases/download/$tag/changelog.json")
                     val connection = changelogUrl.openConnection() as HttpURLConnection
                     connection.setRequestProperty("User-Agent", "ViviMusic-Changelog-App")
                     connection.setRequestProperty("Accept", "application/json")
@@ -243,7 +239,7 @@ fun ChangelogScreen(
         isFetchingOldReleases = true
         coroutineScope.launch(Dispatchers.IO) {
             try {
-                val releasesUrl = URL("https://api.github.com/repos/vivizzz007/vivi-music/releases")
+                val releasesUrl = URL("https://api.github.com/repos/i7rvn/Spoty/releases")
                 val connection = releasesUrl.openConnection() as HttpURLConnection
                 connection.setRequestProperty("User-Agent", "ViviMusic-Changelog-App")
                 connection.setRequestProperty("Accept", "application/vnd.github+json")
