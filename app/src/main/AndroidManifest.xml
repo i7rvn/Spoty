@@ -263,6 +263,17 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".utils.PlaybackTileService"
+            android:exported="true"
+            android:icon="@drawable/vivimusicnotification"
+            android:label="Spoty"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <!-- Receiver for Listen Together notification actions (Approve/Reject) -->
         <receiver
             android:name=".listentogether.ListenTogetherActionReceiver"
