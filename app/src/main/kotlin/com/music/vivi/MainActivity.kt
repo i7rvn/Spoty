@@ -164,6 +164,7 @@ import com.music.vivi.vivimusic.UpdateNotificationHelper
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import com.music.vivi.constants.PauseListenHistoryKey
+import com.music.vivi.constants.ShakeToShuffleKey
 import com.music.vivi.constants.PauseSearchHistoryKey
 import com.music.vivi.constants.PureBlackKey
 import com.music.vivi.constants.SYSTEM_DEFAULT
@@ -975,6 +976,42 @@ class MainActivity : ComponentActivity() {
                 }
 
                 val baseBg = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
+
+                val shakeToShuffle by rememberPreference(ShakeToShuffleKey, defaultValue = false)
+                DisposableEffect(shakeToShuffle, playerConnection) {
+                    if (!shakeToShuffle || playerConnection == null) {
+                        onDispose {}
+                    } else {
+                        val sensorManager = getSystemService(SENSOR_SERVICE) as? android.hardware.SensorManager
+                        val accelerometer = sensorManager?.getDefaultSensor(android.hardware.Sensor.TYPE_ACCELEROMETER)
+                        var lastShakeTime = 0L
+                        val shakeThreshold = 15f
+                        val listener = object : android.hardware.SensorEventListener {
+                            override fun onSensorChanged(event: android.hardware.SensorEvent) {
+                                val gX = event.values[0] / android.hardware.SensorManager.GRAVITY_EARTH
+                                val gY = event.values[1] / android.hardware.SensorManager.GRAVITY_EARTH
+                                val gZ = event.values[2] / android.hardware.SensorManager.GRAVITY_EARTH
+                                val gForce = kotlin.math.sqrt(gX * gX + gY * gY + gZ * gZ)
+                                if (gForce > shakeThreshold) {
+                                    val now = System.currentTimeMillis()
+                                    if (now - lastShakeTime > 1200) {
+                                        lastShakeTime = now
+                                        playerConnection?.player?.let { player ->
+                                            player.shuffleModeEnabled = !player.shuffleModeEnabled
+                                        }
+                                    }
+                                }
+                            }
+                            override fun onAccuracyChanged(sensor: android.hardware.Sensor?, accuracy: Int) {}
+                        }
+                        if (accelerometer != null) {
+                            sensorManager.registerListener(listener, accelerometer, android.hardware.SensorManager.SENSOR_DELAY_NORMAL)
+                        }
+                        onDispose {
+                            sensorManager?.unregisterListener(listener)
+                        }
+                    }
+                }
 
                 CompositionLocalProvider(
                     LocalDatabase provides database,

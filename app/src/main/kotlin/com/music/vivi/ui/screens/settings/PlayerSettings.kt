@@ -53,6 +53,7 @@ import com.music.vivi.constants.MotionartworkSource
 import com.music.vivi.constants.CrossfadeDurationKey
 import com.music.vivi.constants.CrossfadeEnabledKey
 import com.music.vivi.constants.CrossfadeGaplessKey
+import com.music.vivi.constants.ShakeToShuffleKey
 import com.music.vivi.constants.CrossfadeManualSkipKey
 import com.music.vivi.constants.AutoLoadMoreKey
 import com.music.vivi.constants.AutoSkipNextOnErrorKey
@@ -110,6 +111,10 @@ fun PlayerSettings(
     val (crossfadeGapless, onCrossfadeGaplessChange) = rememberPreference(
         CrossfadeGaplessKey,
         defaultValue = true
+    )
+    val (shakeToShuffle, onShakeToShuffleChange) = rememberPreference(
+        ShakeToShuffleKey,
+        defaultValue = false
     )
     val (crossfadeManualSkip, onCrossfadeManualSkipChange) = rememberPreference(
         CrossfadeManualSkipKey,
@@ -502,6 +507,27 @@ fun PlayerSettings(
                             )
                         },
                         onClick = { onCrossfadeGaplessChange(!crossfadeGapless) }
+                    ))
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.shuffle),
+                        title = { Text(stringResource(R.string.shake_to_shuffle)) },
+                        description = { Text(stringResource(R.string.shake_to_shuffle_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = shakeToShuffle,
+                                onCheckedChange = onShakeToShuffleChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (shakeToShuffle) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onShakeToShuffleChange(!shakeToShuffle) }
                     ))
                     add(Material3SettingsItem(
                         icon = painterResource(R.drawable.fast_forward),

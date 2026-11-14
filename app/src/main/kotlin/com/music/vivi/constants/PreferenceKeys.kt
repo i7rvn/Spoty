@@ -199,6 +199,7 @@ val PreventDuplicateTracksInQueueKey = booleanPreferencesKey("preventDuplicateTr
 val CrossfadeEnabledKey = booleanPreferencesKey("crossfadeEnabled")
 val CrossfadeDurationKey = floatPreferencesKey("crossfadeDuration")
 val CrossfadeGaplessKey = booleanPreferencesKey("crossfadeGapless")
+val ShakeToShuffleKey = booleanPreferencesKey("shakeToShuffle")
 val CrossfadeManualSkipKey = booleanPreferencesKey("crossfadeManualSkip")
 val CrossfadeCurveKey = stringPreferencesKey("crossfadeCurve")
 

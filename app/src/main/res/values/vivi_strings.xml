@@ -348,6 +348,8 @@
     <string name="crossfade_duration">Crossfade duration</string>
     <string name="crossfade_gapless">Disable for gapless albums</string>
     <string name="crossfade_gapless_desc">Don\'t crossfade if the album is gapless</string>
+    <string name="shake_to_shuffle">Shake to shuffle</string>
+    <string name="shake_to_shuffle_desc">Shake your phone to toggle shuffle mode</string>
     <string name="crossfade_manual_skip">Crossfade on manual skip</string>
     <string name="crossfade_manual_skip_desc">Also crossfade when you press next/previous, instead of only at the end of a track</string>
     <string name="crossfade_curve">Crossfade curve</string>
