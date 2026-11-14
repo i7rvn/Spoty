@@ -322,6 +322,39 @@ fun PlayerMenu(
                             context.startActivity(android.content.Intent.createChooser(intent, null))
                             onDismiss()
                         }
+                    ),
+                    NewAction(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.share),
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        text = stringResource(R.string.share_as_image),
+                        onClick = {
+                            coroutineScope.launch {
+                                try {
+                                    val image = com.music.vivi.utils.ComposeToImage.createLyricsImage(
+                                        context = context,
+                                        mediaMetadata = mediaMetadata,
+                                        lyrics = ""
+                                    )
+                                    val filename = "now_playing_${System.currentTimeMillis()}"
+                                    val uri = com.music.vivi.utils.ComposeToImage.saveBitmapAsFile(context, image, filename)
+                                    val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                        type = "image/png"
+                                        putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(android.content.Intent.createChooser(shareIntent, null))
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            onDismiss()
+                        }
                     )
                 ),
                 columns = if (isListenTogetherGuest) 2 else 3,

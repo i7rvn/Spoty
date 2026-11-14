@@ -122,6 +122,7 @@
     <string name="view_album">View album</string>
     <string name="refetch">Refetch</string>
     <string name="share">Share</string>
+    <string name="share_as_image">Share as image</string>
     <string name="more_options">More options</string>
     <string name="more_label">More</string>
     <string name="releases_for_you">Releases for you</string>
