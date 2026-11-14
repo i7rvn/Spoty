@@ -256,12 +256,6 @@ fun AboutScreen(
                     isExternalLink = true
                 ),
                 Material3SettingsItem(
-                    icon = painterResource(R.drawable.web_link),
-                    title = { Text(stringResource(R.string.website)) },
-                    onClick = { uriHandler.safeOpenUri(context, "https://vivimusic.mkmdevilmi.workers.dev/") },
-                    isExternalLink = true
-                ),
-                Material3SettingsItem(
                     icon = painterResource(R.drawable.telegram),
                     title = { Text(stringResource(R.string.telegram_channel)) },
                     onClick = { uriHandler.safeOpenUri(context, "https://t.me/vrni2") },
