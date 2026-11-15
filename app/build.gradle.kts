@@ -25,9 +25,9 @@ android {
         applicationId = "com.infinity.spoty"
         minSdk = 26
         targetSdk = 37
-        versionCode = 80
+        versionCode = 1
         val betaVersionName = project.findProperty("betaVersionName") as String?
-        versionName = betaVersionName ?: "7.0.1"
+        versionName = betaVersionName ?: "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
