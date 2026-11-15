@@ -528,6 +528,11 @@ fun StorageSettings(
                         android.util.Log.d("StorageSettings", "Clear image cache button clicked!")
                         clearImageCacheDialog = true
                     }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.search),
+                    title = { Text(stringResource(R.string.duplicate_songs)) },
+                    onClick = { navController.navigate("settings/storage/duplicates") }
                 )
             )
         )

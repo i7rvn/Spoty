@@ -56,6 +56,7 @@ import com.music.vivi.ui.screens.settings.AccountSettingsScreen
 import com.music.vivi.ui.screens.ListeningSummaryScreen
 import com.music.vivi.ui.screens.DetailedListeningHistoryScreen
 import com.music.vivi.ui.screens.settings.StorageSettings
+import com.music.vivi.ui.screens.settings.DuplicateSongsScreen
 import com.music.vivi.ui.screens.settings.ThemeSettings
 import com.music.vivi.ui.screens.settings.AiSettings
 import com.music.vivi.ui.screens.settings.integrations.DiscordSettings
@@ -404,6 +405,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/storage") {
         StorageSettings(navController, scrollBehavior)
+    }
+
+    composable("settings/storage/duplicates") {
+        DuplicateSongsScreen(navController, scrollBehavior)
     }
 
     composable("settings/equalizer") {
