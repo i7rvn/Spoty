@@ -395,6 +395,14 @@ fun ThemeControls(
 
                 add(
                     Material3SettingsItem(
+                        icon = painterResource(R.drawable.palette),
+                        title = { Text(stringResource(R.string.theme_marketplace)) },
+                        onClick = { navController.navigate("settings/appearance/theme_marketplace") }
+                    )
+                )
+
+                add(
+                    Material3SettingsItem(
                         icon = painterResource(R.drawable.contrast),
                         title = { Text(stringResource(R.string.cd_pure_black_mode)) },
                         trailingContent = {
