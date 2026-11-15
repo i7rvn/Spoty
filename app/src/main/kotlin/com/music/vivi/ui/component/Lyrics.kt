@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -53,6 +54,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -590,6 +592,8 @@ fun Lyrics(
 
     var showProgressDialog by remember { mutableStateOf(false) }
     var showShareDialog by remember { mutableStateOf(false) }
+    var showEditLyricsDialog by remember { mutableStateOf(false) }
+    var editedLyricsText by remember { mutableStateOf("") }
     var shareDialogData by remember { mutableStateOf<Triple<String, String, String>?>(null) }
 
     var showColorPickerDialog by remember { mutableStateOf(false) }
@@ -2606,6 +2610,30 @@ fun Lyrics(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
+                    // Edit Lyrics Row
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                editedLyricsText = lyricsText
+                                showEditLyricsDialog = true
+                                showShareDialog = false
+                            }
+                            .padding(vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.edit),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = stringResource(R.string.edit_lyrics),
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     // Cancel Button Row
                     Row(
                         modifier = Modifier
@@ -2859,6 +2887,72 @@ fun Lyrics(
             }
         }
         } //else block
+    }
+
+    if (showEditLyricsDialog) {
+        BasicAlertDialog(onDismissRequest = { showEditLyricsDialog = false }) {
+            Card(
+                shape = RoundedCornerShape(20.dp),
+                modifier = Modifier.fillMaxWidth().padding(20.dp)
+            ) {
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Text(
+                        text = stringResource(id = R.string.edit_lyrics),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = editedLyricsText,
+                        onValueChange = { editedLyricsText = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 180.dp, max = 360.dp)
+                            .verticalScroll(rememberScrollState()),
+                        textStyle = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Text(
+                            text = stringResource(R.string.cancel),
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier
+                                .clickable { showEditLyricsDialog = false }
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.save),
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier
+                                .clickable {
+                                    val songId = mediaMetadata?.id
+                                    if (songId != null) {
+                                        database.query {
+                                            upsert(
+                                                com.music.vivi.db.entities.LyricsEntity(
+                                                    id = songId,
+                                                    lyrics = editedLyricsText,
+                                                    provider = "Manual"
+                                                )
+                                            )
+                                        }
+                                    }
+                                    showEditLyricsDialog = false
+                                }
+                                .padding(vertical = 8.dp, horizontal = 12.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
