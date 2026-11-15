@@ -355,6 +355,36 @@ fun PlayerMenu(
                             }
                             onDismiss()
                         }
+                    ),
+                    NewAction(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.qr_code),
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        text = stringResource(R.string.share_as_qr_code),
+                        onClick = {
+                            coroutineScope.launch {
+                                try {
+                                    val link = "https://music.youtube.com/watch?v=${mediaMetadata.id}"
+                                    val qrBitmap = com.music.vivi.utils.QrCodeGenerator.generate(link)
+                                    val filename = "qr_${System.currentTimeMillis()}"
+                                    val uri = com.music.vivi.utils.ComposeToImage.saveBitmapAsFile(context, qrBitmap, filename)
+                                    val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                        type = "image/png"
+                                        putExtra(android.content.Intent.EXTRA_STREAM, uri)
+                                        addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    }
+                                    context.startActivity(android.content.Intent.createChooser(shareIntent, null))
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            onDismiss()
+                        }
                     )
                 ),
                 columns = if (isListenTogetherGuest) 2 else 3,

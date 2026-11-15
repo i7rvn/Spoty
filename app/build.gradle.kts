@@ -223,6 +223,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 dependencies {
     implementation(libs.guava)
+    implementation(libs.zxing.core)
     implementation(libs.coroutines.guava)
     implementation(libs.concurrent.futures)
 
