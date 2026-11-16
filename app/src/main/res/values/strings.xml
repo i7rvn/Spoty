@@ -122,7 +122,6 @@
     <string name="view_album">View album</string>
     <string name="refetch">Refetch</string>
     <string name="share">Share</string>
-    <string name="share_as_image">Share as image</string>
     <string name="share_as_qr_code">Share as QR code</string>
     <string name="duplicate_songs">Duplicate songs</string>
     <string name="no_duplicate_songs_found">No duplicate songs found in your library.</string>
