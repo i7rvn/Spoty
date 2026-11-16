@@ -1,6 +1,6 @@
-# Working with ViviMusic as an AI agent
+# Working with Spoty as an AI agent
 
-ViviMusic is a 3rd party YouTube Music client written in Kotlin. It follows material 3 design guidelines closely.
+Spoty is a 3rd party YouTube Music client written in Kotlin. It follows material 3 design guidelines closely.
 
 ## Rules for working on the project
 

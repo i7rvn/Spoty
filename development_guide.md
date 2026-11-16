@@ -1,5 +1,5 @@
-# VIVI Music Dev Guide
-This file outlines the process of setting up a local dev environment for VIVI Music.
+# Spoty Dev Guide
+This file outlines the process of setting up a local dev environment for Spoty.
 
 ## Prerequisites
 - Java JDK 21
@@ -11,8 +11,8 @@ This file outlines the process of setting up a local dev environment for VIVI Mu
 
 ## Basic setup
 ```bash
-git clone https://github.com/vivizzz007/vivi-music.git
-cd vivi-music
+git clone https://github.com/i7rvn/Spoty.git
+cd Spoty
 git submodule update --init --recursive
 cd app
 bash generate_proto.sh
