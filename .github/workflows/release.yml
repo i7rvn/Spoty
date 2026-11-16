@@ -4,54 +4,136 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'app/build.gradle.kts'
   workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type for a new release'
+        required: false
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      existing_tag:
+        description: 'Attach a freshly built & signed APK to an EXISTING release tag instead of creating a new one (e.g. v1.0.0). Leave empty for a normal new release.'
+        required: false
+        type: string
 
 permissions:
   contents: write
 
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
 jobs:
-  check_version:
-    name: Check Version & Release Status
+  determine_version:
+    name: Determine Version
     runs-on: ubuntu-latest
-    if: github.actor != 'dependabot[bot]'
+    if: github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]'
     outputs:
-      should_release: ${{ steps.check_release.outputs.exists == 'false' }}
-      version_code: ${{ steps.version_info.outputs.version_code }}
-      version_name: ${{ steps.version_info.outputs.version_name }}
+      version_name: ${{ steps.compute.outputs.version_name }}
+      version_code: ${{ steps.compute.outputs.version_code }}
+      tag: ${{ steps.compute.outputs.tag }}
+      existing_tag_mode: ${{ steps.compute.outputs.existing_tag_mode }}
+      should_release: ${{ steps.compute.outputs.should_release }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Extract Version Info
-        id: version_info
-        run: |
-          VERSION_CODE=$(grep "versionCode =" app/build.gradle.kts | tr -d ' ' | cut -d= -f2)
-          VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
-          echo "Extracted Version Code: $VERSION_CODE"
-          echo "Extracted Version Name: $VERSION_NAME"
-          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
-          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
-
-      - name: Check If Release Already Exists
-        id: check_release
+      - name: Compute version
+        id: compute
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MANUAL_BUMP: ${{ github.event.inputs.bump }}
+          EXISTING_TAG_INPUT: ${{ github.event.inputs.existing_tag }}
         run: |
-          VERSION_NAME="${{ steps.version_info.outputs.version_name }}"
-          if gh release view "v$VERSION_NAME" >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Release v$VERSION_NAME already exists. Skipping release steps."
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Release v$VERSION_NAME does not exist. Proceeding with release."
+          set -e
+          CURRENT_CODE=$(grep "versionCode =" app/build.gradle.kts | tr -d ' ' | cut -d= -f2)
+
+          # --- Mode 1: attach a signed APK to an EXISTING release, no new tag/release created ---
+          if [ -n "$EXISTING_TAG_INPUT" ]; then
+            if ! gh release view "$EXISTING_TAG_INPUT" >/dev/null 2>&1; then
+              echo "::error::Release $EXISTING_TAG_INPUT does not exist. Create it first, or leave 'existing_tag' empty to cut a new release."
+              exit 1
+            fi
+            VERSION_NAME="${EXISTING_TAG_INPUT#v}"
+            echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+            echo "version_code=$CURRENT_CODE" >> "$GITHUB_OUTPUT"
+            echo "tag=$EXISTING_TAG_INPUT" >> "$GITHUB_OUTPUT"
+            echo "existing_tag_mode=true" >> "$GITHUB_OUTPUT"
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "Existing-tag mode: will build and attach to $EXISTING_TAG_INPUT (no new tag/release)."
+            exit 0
           fi
+
+          # --- Mode 2: normal automatic release, bump semantic version from the latest existing release ---
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+
+          if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
+            echo "No previous release found. Starting at v1.0.0."
+            NEW_VERSION="1.0.0"
+          else
+            echo "Latest existing release: $LATEST_TAG"
+            VERSION_NO_V="${LATEST_TAG#v}"
+            MAJOR=$(echo "$VERSION_NO_V" | cut -d. -f1)
+            MINOR=$(echo "$VERSION_NO_V" | cut -d. -f2)
+            PATCH=$(echo "$VERSION_NO_V" | cut -d. -f3)
+            BUMP="${MANUAL_BUMP:-patch}"
+            case "$BUMP" in
+              major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+              minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+              *)     PATCH=$((PATCH + 1)) ;;
+            esac
+            NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          fi
+
+          NEW_TAG="v${NEW_VERSION}"
+          if gh release view "$NEW_TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $NEW_TAG already exists. Refusing to create a duplicate release."
+            exit 1
+          fi
+
+          NEW_CODE=$((CURRENT_CODE + 1))
+          echo "version_name=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+          echo "version_code=$NEW_CODE" >> "$GITHUB_OUTPUT"
+          echo "tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          echo "existing_tag_mode=false" >> "$GITHUB_OUTPUT"
+          echo "should_release=true" >> "$GITHUB_OUTPUT"
+
+  validate_secrets:
+    name: Validate Signing Secrets
+    needs: determine_version
+    if: needs.determine_version.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required secrets are present
+        run: |
+          missing=0
+          for name in KEYSTORE KEY_ALIAS KEYSTORE_PASSWORD KEY_PASSWORD; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Required secret $name is missing or empty."
+              missing=1
+            fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo "::error::One or more signing secrets are missing. See RELEASE-GUIDE.md. Aborting before any build is attempted."
+            exit 1
+          fi
+          echo "All required signing secrets are present."
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
   build_apks:
     name: Build & Sign (${{ matrix.name }})
-    needs: check_version
-    if: needs.check_version.outputs.should_release == 'true'
+    needs: [determine_version, validate_secrets]
+    if: needs.determine_version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -61,12 +143,12 @@ jobs:
             name: Universal FOSS
             task: assembleUniversalFossRelease
             releaseDir: app/build/outputs/apk/universalFoss/release/
-            artifactFile: izzydroid-universal-foss-release.apk
+            artifactFile: Spoty-v${{ needs.determine_version.outputs.version_name }}-foss.apk
           - flavor: gms
             name: Universal GMS
             task: assembleUniversalGmsRelease
             releaseDir: app/build/outputs/apk/universalGms/release/
-            artifactFile: spoty.apk
+            artifactFile: Spoty-v${{ needs.determine_version.outputs.version_name }}.apk
 
     steps:
       - name: Checkout Code
@@ -104,6 +186,13 @@ jobs:
             -validity 10000 \
             -dname "CN=Android Debug,O=Android,C=US"
 
+      - name: Set release version for this build
+        if: needs.determine_version.outputs.existing_tag_mode == 'false'
+        run: |
+          sed -i "s/versionCode = [0-9]*/versionCode = ${{ needs.determine_version.outputs.version_code }}/" app/build.gradle.kts
+          sed -i "s/versionName = betaVersionName ?: \"[^\"]*\"/versionName = betaVersionName ?: \"${{ needs.determine_version.outputs.version_name }}\"/" app/build.gradle.kts
+          grep -E "versionCode|versionName" app/build.gradle.kts
+
       - name: Build Release APK
         env:
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
@@ -123,10 +212,18 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
           buildToolsVersion: 35.0.0
 
+      - name: Verify APK signature
+        run: |
+          BUILD_TOOLS="$ANDROID_HOME/build-tools/35.0.0"
+          if [ ! -d "$BUILD_TOOLS" ]; then
+            BUILD_TOOLS=$(dirname "$(find "$ANDROID_HOME/build-tools" -name apksigner | head -n1)")
+          fi
+          "$BUILD_TOOLS/apksigner" verify --verbose "${{ steps.sign_apk.outputs.signedFile }}"
+
       - name: Stage Artifact
         run: |
           mkdir -p staged_artifact
-          cp "${{ steps.sign_apk.outputs.signedFile }}" staged_artifact/${{ matrix.artifactFile }}
+          cp "${{ steps.sign_apk.outputs.signedFile }}" "staged_artifact/${{ matrix.artifactFile }}"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -137,17 +234,14 @@ jobs:
 
   publish_release:
     name: Publish Release
-    needs: [check_version, build_apks]
-    if: needs.check_version.outputs.should_release == 'true'
+    needs: [determine_version, build_apks]
+    if: needs.determine_version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          fetch-depth: 0
 
       - name: Download FOSS APK
         uses: actions/download-artifact@v4
@@ -161,122 +255,88 @@ jobs:
           name: apk-gms
           path: release_assets
 
+      - name: Generate release notes from commit history
+        id: notes
+        env:
+          TAG: ${{ needs.determine_version.outputs.tag }}
+          VERSION_NAME: ${{ needs.determine_version.outputs.version_name }}
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          {
+            echo "## Spoty v$VERSION_NAME"
+            echo ""
+            if [ -n "$PREV_TAG" ]; then
+              echo "### Changes since $PREV_TAG"
+              git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --no-merges
+            else
+              echo "### Changes"
+              git log --pretty=format:"- %s" --no-merges
+            fi
+            echo ""
+          } > release_notes.txt
+          cat release_notes.txt
+
       - name: Generate changelog.json
         env:
-          VERSION_CODE: ${{ needs.check_version.outputs.version_code }}
-          VERSION_NAME: ${{ needs.check_version.outputs.version_name }}
+          VERSION_NAME: ${{ needs.determine_version.outputs.version_name }}
         shell: python
         run: |
-          import os, json
-          version_code = os.environ.get('VERSION_CODE')
-          version_name = os.environ.get('VERSION_NAME')
-          changelog_file = f"Changelog/Stablemd/{version_code}.md"
-          
-          features = []
-          fixes = []
-          description = None
-          image_url = "https://raw.githubusercontent.com/vivizzz007/vivi-music/main/assets/banner.png"
-          for ext in ["png", "jpg"]:
-              found = False
-              for prefix in ["v", ""]:
-                  potential_file = f"NEW-UI/update/{prefix}{version_name}.{ext}"
-                  if os.path.exists(potential_file):
-                      image_url = f"https://raw.githubusercontent.com/vivizzz007/vivi-music/main/NEW-UI/update/{prefix}{version_name}.{ext}"
-                      found = True
-                      break
-              if found:
-                  break
-          
-          if os.path.exists(changelog_file):
-              with open(changelog_file, 'r', encoding='utf-8') as f:
-                  for line in f:
-                      line_str = line.strip()
-                      if not line_str:
-                          continue
-                      if line_str.lower().startswith("description::"):
-                          description = line_str[len("description::"):].strip()
-                      elif line_str.lower().startswith("image::"):
-                          image_url = line_str[len("image::"):].strip()
-                      else:
-                          clean_line = line_str.lstrip("*-• ").strip()
-                          if "fix" in clean_line.lower() or "resolve" in clean_line.lower():
-                              fixes.append(clean_line)
-                          else:
-                              features.append(clean_line)
-          else:
-              features.append("Bug fixes and performance improvements.")
-              
-          if not description:
-              summary_items = []
-              for feat in features[:3]:
-                  val = feat
-                  for prefix in ["added new ", "added a ", "added ", "updated new ", "updated ", "new "]:
-                      if val.lower().startswith(prefix):
-                          val = val[len(prefix):]
-                          break
-                  if val:
-                      val = val[0].lower() + val[1:]
-                  summary_items.append(val)
-              
-              if summary_items:
-                  desc_text = "brings " + ", ".join(summary_items)
-                  if len(features) > 3:
-                      desc_text += ", and other improvements."
-                  else:
-                      desc_text += "."
-                  if fixes:
-                      desc_text += " It also includes several bug fixes."
-                  description = f"VIVI MUSIC v{version_name} {desc_text}"
-              else:
-                  description = f"VIVI MUSIC v{version_name} brings new updates, features, and bug fixes."
-                  
-          changelog_sections = []
-          if features:
-              changelog_sections.append({
-                  "title": "What's New",
-                  "items": features
-              })
-          if fixes:
-              changelog_sections.append({
-                  "title": "Fixes & Improvements",
-                  "items": fixes
-              })
-              
-          changelog_sections.append({
-              "title": "Support",
-              "items": [
-                  "Support development on Ko-fi: https://ko-fi.com/vividhpashokan",
-                  "Support via UPI: vividhpashokan@axl",
-                  "Support via PayPal: https://www.paypal.me/vividhpashokan"
-              ]
-          })
-              
+          import json, os
+          version_name = os.environ["VERSION_NAME"]
+          with open("release_notes.txt", encoding="utf-8") as f:
+              lines = [l.strip() for l in f.readlines() if l.strip().startswith("-")]
+          items = [l.lstrip("- ").strip() for l in lines] or ["Bug fixes and improvements."]
           data = {
               "version": version_name,
-              "description": description,
-              "image": image_url,
-              "changelog": changelog_sections
+              "description": f"Spoty v{version_name} \u2014 see the changelog below.",
+              "changelog": [
+                  {"title": "What's New", "items": items}
+              ]
           }
-          
           with open("release_assets/changelog.json", "w", encoding="utf-8") as f:
               json.dump(data, f, indent=2)
 
-      - name: Create GitHub Release & Upload Assets
+      - name: Create or update GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.determine_version.outputs.tag }}
+          VERSION_NAME: ${{ needs.determine_version.outputs.version_name }}
+          EXISTING_TAG_MODE: ${{ needs.determine_version.outputs.existing_tag_mode }}
         run: |
-          VERSION_CODE="${{ needs.check_version.outputs.version_code }}"
-          VERSION_NAME="${{ needs.check_version.outputs.version_name }}"
-          NOTES_FILE="Changelog/Stablemd/${VERSION_CODE}.md"
-          
-          if [ -f "$NOTES_FILE" ]; then
-            cat "$NOTES_FILE" > release_notes.txt
+          if [ "$EXISTING_TAG_MODE" = "true" ]; then
+            echo "Uploading APK to existing release $TAG (no new release/tag created)."
+            gh release upload "$TAG" release_assets/* --clobber
           else
-            echo "Release v$VERSION_NAME" > release_notes.txt
+            gh release create "$TAG" release_assets/* \
+              --title "Spoty v$VERSION_NAME" \
+              --notes-file release_notes.txt \
+              --target main
           fi
-          echo -e "\n\n☕ Support development on Ko-fi: https://ko-fi.com/vividhpashokan\n💸 Support via UPI: vividhpashokan@axl\n💳 Support via PayPal: https://www.paypal.me/vividhpashokan" >> release_notes.txt
-          
-          gh release create "v$VERSION_NAME" release_assets/* \
-            --title "VIVI-GITHUB-DROID v$VERSION_NAME" \
-            --notes-file release_notes.txt \
-            --target main
+
+  sync_version_in_repo:
+    name: Commit Released Version Back to main
+    needs: [determine_version, publish_release]
+    if: needs.determine_version.outputs.should_release == 'true' && needs.determine_version.outputs.existing_tag_mode == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Bump build.gradle.kts to the released version
+        run: |
+          sed -i "s/versionCode = [0-9]*/versionCode = ${{ needs.determine_version.outputs.version_code }}/" app/build.gradle.kts
+          sed -i "s/versionName = betaVersionName ?: \"[^\"]*\"/versionName = betaVersionName ?: \"${{ needs.determine_version.outputs.version_name }}\"/" app/build.gradle.kts
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then
+            echo "Version already up to date, nothing to commit."
+            exit 0
+          fi
+          git add app/build.gradle.kts
+          git commit -m "chore(release): sync version to ${{ needs.determine_version.outputs.version_name }} (${{ needs.determine_version.outputs.version_code }}) [skip ci]"
+          git push origin HEAD:main

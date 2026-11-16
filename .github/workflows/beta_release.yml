@@ -184,13 +184,12 @@ jobs:
           features = []
           fixes = []
           description = None
-          image_url = "https://raw.githubusercontent.com/vivizzz007/vivi-music/main/assets/banner.png"
+          image_url = "https://raw.githubusercontent.com/i7rvn/Spoty/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"
           for ext in ["png", "jpg"]:
               found = False
               for prefix in ["b", "v", ""]:
                   potential_file = f"NEW-UI/update/{prefix}{version_name}.{ext}"
                   if os.path.exists(potential_file):
-                      image_url = f"https://raw.githubusercontent.com/vivizzz007/vivi-music/main/NEW-UI/update/{prefix}{version_name}.{ext}"
                       found = True
                       break
               if found:
@@ -235,9 +234,9 @@ jobs:
                       desc_text += "."
                   if fixes:
                       desc_text += " It also includes several bug fixes."
-                  description = f"VIVI MUSIC b{version_name} {desc_text}"
+                  description = f"Spoty b{version_name} {desc_text}"
               else:
-                  description = f"VIVI MUSIC b{version_name} brings new updates, features, and bug fixes."
+                  description = f"Spoty b{version_name} brings new updates, features, and bug fixes."
                   
           changelog_sections = []
           if features:
@@ -254,9 +253,7 @@ jobs:
           changelog_sections.append({
               "title": "Support",
               "items": [
-                  "Support development on Ko-fi: https://ko-fi.com/vividhpashokan",
-                  "Support via UPI: vividhpashokan@axl",
-                  "Support via PayPal: https://www.paypal.me/vividhpashokan"
+                  "Support the project: https://t.me/vrni2",
               ]
           })
               
@@ -283,10 +280,9 @@ jobs:
           else
             echo "Release b$VERSION_NAME" > release_notes.txt
           fi
-          echo -e "\n\n☕ Support development on Ko-fi: https://ko-fi.com/vividhpashokan\n💸 Support via UPI: vividhpashokan@axl\n💳 Support via PayPal: https://www.paypal.me/vividhpashokan" >> release_notes.txt
           
           gh release create "b$VERSION_NAME" release_assets/* \
-            --title "VIVI-GITHUB-DROID b$VERSION_NAME" \
+            --title "Spoty b$VERSION_NAME" \
             --notes-file release_notes.txt \
             --prerelease \
             --target "${{ github.ref_name }}"
