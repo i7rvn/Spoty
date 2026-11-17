@@ -336,7 +336,6 @@ fun AboutScreen(
 }
 
 
-@Composable
 private data class CryptoPaymentMethod(
     val badge: String,
     val label: String,

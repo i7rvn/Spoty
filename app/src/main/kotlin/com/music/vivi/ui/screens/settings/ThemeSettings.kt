@@ -176,6 +176,7 @@ fun ThemeSettings(
     ) { innerPadding ->
         if (isLandscape) {
             LandscapeThemeLayout(
+                navController = navController,
                 innerPadding = innerPadding,
                 darkMode = darkMode,
                 onDarkModeChange = onDarkModeChange,
@@ -186,6 +187,7 @@ fun ThemeSettings(
             )
         } else {
             PortraitThemeLayout(
+                navController = navController,
                 innerPadding = innerPadding,
                 darkMode = darkMode,
                 onDarkModeChange = onDarkModeChange,
@@ -200,6 +202,7 @@ fun ThemeSettings(
 
 @Composable
 fun PortraitThemeLayout(
+    navController: NavController,
     innerPadding: PaddingValues,
     darkMode: DarkMode,
     onDarkModeChange: (DarkMode) -> Unit,
@@ -230,6 +233,7 @@ fun PortraitThemeLayout(
         Spacer(modifier = Modifier.height(50.dp))
 
         ThemeControls(
+            navController = navController,
             darkMode = darkMode,
             onDarkModeChange = onDarkModeChange,
             pureBlack = pureBlack,
@@ -244,6 +248,7 @@ fun PortraitThemeLayout(
 
 @Composable
 fun LandscapeThemeLayout(
+    navController: NavController,
     innerPadding: PaddingValues,
     darkMode: DarkMode,
     onDarkModeChange: (DarkMode) -> Unit,
@@ -283,6 +288,7 @@ fun LandscapeThemeLayout(
                 .padding(end = 16.dp, top = 16.dp, bottom = 16.dp)
         ) {
             ThemeControls(
+                navController = navController,
                 darkMode = darkMode,
                 onDarkModeChange = onDarkModeChange,
                 pureBlack = pureBlack,
@@ -299,6 +305,7 @@ fun LandscapeThemeLayout(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ThemeControls(
+    navController: NavController,
     darkMode: DarkMode,
     onDarkModeChange: (DarkMode) -> Unit,
     pureBlack: Boolean,
