@@ -119,7 +119,7 @@ jobs:
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
           VIVI_GITHUB_CLIENT_ID: ${{ secrets.VIVI_GITHUB_CLIENT_ID }}
           VIVI_GITHUB_CLIENT_SECRET: ${{ secrets.VIVI_GITHUB_CLIENT_SECRET }}
-        run: ./gradlew ${{ matrix.task }} -PbetaVersionName="b${{ needs.check_version.outputs.version_name }}" --no-configuration-cache --console=plain --warning-mode summary -x lint --max-workers=4
+        run: ./gradlew ${{ matrix.task }} -PbetaVersionName="b${{ needs.check_version.outputs.version_name }}" --no-configuration-cache --no-parallel --console=plain --warning-mode summary -x lint --max-workers=2
 
       - name: Sign APK
         id: sign_apk
