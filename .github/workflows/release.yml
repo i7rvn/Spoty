@@ -71,10 +71,10 @@ jobs:
           fi
 
           # --- Mode 2: normal automatic release, bump semantic version from the latest existing release ---
-          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          LATEST_TAG=$(gh release list --limit 20 --json tagName --jq '[.[].tagName | select(test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))][0]' 2>/dev/null || echo "")
 
           if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
-            echo "No previous release found. Starting at v1.0.0."
+            echo "No previous release with a valid vX.Y.Z tag found. Starting at v1.0.0."
             NEW_VERSION="1.0.0"
           else
             echo "Latest existing release: $LATEST_TAG"
