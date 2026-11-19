@@ -55,7 +55,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import com.music.vivi.ui.theme.vivimusicTheme
+import com.music.vivi.ui.theme.SpotyTheme
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -172,7 +172,7 @@ class WelcomeActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            vivimusicTheme {
+            SpotyTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -332,7 +332,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                     val welcomeString = stringResource(id = com.music.vivi.R.string.welcome_to_vivi)
                     val annotatedWelcome = remember(welcomeString, primaryColor) {
                         buildAnnotatedString {
-                            val target = "Vivi"
+                            val target = "Spoty"
                             val index = welcomeString.indexOf(target)
                             if (index != -1) {
                                 val prefix = welcomeString.substring(0, index).trim()
@@ -393,7 +393,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         onClick = {},
                         label = {
                             Text(
-                                text = "By vividh p ashokan",
+                                text = "By Infinity",
                                 fontFamily = GoogleSansFlex
                             )
                         },
@@ -609,48 +609,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             iconTint = Color(0xFF004e5d),
                             title = "Join Telegram",
                             description = "Get the latest updates and chat with the community.",
-                            shape = middleCardShape,
-                            control = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.navigate_next),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            onClick = {
-                                uriHandler.safeOpenUri(context, "https://t.me/vrni2")
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        PermissionCard(
-                            icon = painterResource(com.music.vivi.R.drawable.currency_rupee_upi),
-                            iconColor = Color(0xFFffb4ab),
-                            iconTint = Color(0xFF690005),
-                            title = "Support via UPI",
-                            description = "Directly support development via UPI.",
-                            shape = middleCardShape,
-                            control = {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.navigate_next),
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            onClick = {
-                                uriHandler.safeOpenUri(context, "upi://pay?pa=vividhpashokan@axl&pn=Vividh P Ashokan")
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        PermissionCard(
-                            icon = painterResource(com.music.vivi.R.drawable.buymeacoffee),
-                            iconColor = Color(0xFFffb4ab),
-                            iconTint = Color(0xFF690005),
-                            title = "Buy Me a Coffee",
-                            description = "Support the project through Ko-fi.",
                             shape = bottomCardShape,
                             control = {
                                 Icon(
@@ -660,7 +618,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 )
                             },
                             onClick = {
-                                uriHandler.safeOpenUri(context, "https://ko-fi.com/vividhpashokan")
+                                uriHandler.safeOpenUri(context, "https://t.me/vrni2")
                             }
                         )
 

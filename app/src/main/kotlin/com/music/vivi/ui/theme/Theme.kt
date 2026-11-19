@@ -35,7 +35,7 @@ import androidx.compose.ui.text.font.Typeface as ComposeTypeface
 val DefaultThemeColor = Color(0xFF8A5CFF)
 
 @Composable
-fun vivimusicTheme(
+fun SpotyTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     pureBlack: Boolean = false,
     themeColor: Color = DefaultThemeColor,

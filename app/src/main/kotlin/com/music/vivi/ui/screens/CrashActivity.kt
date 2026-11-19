@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.music.vivi.R
-import com.music.vivi.ui.theme.vivimusicTheme
+import com.music.vivi.ui.theme.SpotyTheme
 import com.music.vivi.utils.CrashHandler
 import java.io.File
 import java.text.SimpleDateFormat
@@ -55,7 +55,7 @@ class CrashActivity : ComponentActivity() {
         
         setContent {
             val darkTheme = isSystemInDarkTheme()
-            vivimusicTheme(darkTheme = darkTheme) {
+            SpotyTheme(darkTheme = darkTheme) {
                 CrashScreen(
                     crashLog = crashLog,
                     onClose = { finishAffinity() },

@@ -201,7 +201,7 @@ import com.music.vivi.ui.screens.settings.DarkMode
 import com.music.vivi.ui.screens.settings.NavigationTab
 import com.music.vivi.ui.theme.ColorSaver
 import com.music.vivi.ui.theme.DefaultThemeColor
-import com.music.vivi.ui.theme.vivimusicTheme
+import com.music.vivi.ui.theme.SpotyTheme
 import com.music.vivi.ui.theme.extractThemeColor
 import com.music.vivi.ui.utils.appBarScrollBehavior
 import com.music.vivi.ui.utils.resetHeightOffset
@@ -576,14 +576,14 @@ class MainActivity : ComponentActivity() {
             gitHubViewModel.checkStarStatus(this@MainActivity)
         }
 
-        vivimusicTheme(
+        SpotyTheme(
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,
             themeColor = themeColor,
         ) {
             if (lastSeenStarPromptVersion != currentVersion && !hasStarredRepo && !isStarred) {
                 ActionPromptDialog(
-                    title = "Support ViviMusic \u2B50",
+                    title = "Support Spoty \u2B50",
                     onDismiss = { setLastSeenStarPromptVersion(currentVersion) },
                     onConfirm = {
                         setLastSeenStarPromptVersion(currentVersion)
@@ -598,7 +598,7 @@ class MainActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
                             Text(
-                                text = "If you enjoy using ViviMusic, would you consider starring our repository on GitHub?",
+                                text = "If you enjoy using Spoty, would you consider starring our repository on GitHub?",
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )

@@ -90,7 +90,7 @@ import com.music.vivi.constants.PureBlackKey
 import com.music.vivi.constants.PureBlackMiniPlayerKey
 import com.music.vivi.constants.SelectedThemeColorKey
 import com.music.vivi.ui.theme.DefaultThemeColor
-import com.music.vivi.ui.theme.vivimusicTheme
+import com.music.vivi.ui.theme.SpotyTheme
 import com.music.vivi.utils.rememberEnumPreference
 import com.music.vivi.utils.rememberPreference
 import androidx.compose.material3.Scaffold
@@ -777,7 +777,7 @@ fun ThemePreviewCard(
         DarkMode.OFF -> false
     }
 
-    vivimusicTheme(
+    SpotyTheme(
         darkTheme = useDark,
         pureBlack = pureBlack,
         themeColor = themeColor

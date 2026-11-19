@@ -44,7 +44,7 @@ class AxionEqViewModel @Inject constructor(
     val isDirty = _isDirty.asStateFlow()
 
     val customProfiles = eqProfileRepository.profiles.map { profiles ->
-        profiles.filter { it.isCustom && it.id != "vivi_tuning" }
+        profiles.filter { it.isCustom && it.id != "spoty_tuning" }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
@@ -134,7 +134,7 @@ class AxionEqViewModel @Inject constructor(
             val profile = SavedEQProfile(
                 id = id,
                 name = name,
-                deviceModel = "ViviEqualizer",
+                deviceModel = "Spoty Equalizer",
                 bands = bands,
                 preamp = calculatedPreamp,
                 isCustom = true,
@@ -172,9 +172,9 @@ class AxionEqViewModel @Inject constructor(
             }
             
             val profile = SavedEQProfile(
-                id = "vivi_tuning",
-                name = "Vivi Tuning",
-                deviceModel = "ViviEqualizer",
+                id = "spoty_tuning",
+                name = "Spoty Tuning",
+                deviceModel = "Spoty Equalizer",
                 bands = bands,
                 preamp = calculatedPreamp,
                 isCustom = false,

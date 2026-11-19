@@ -484,7 +484,7 @@
     <string name="karaoke">Karaoke</string>
     <string name="apple_music_style">Apple Music</string>
     <string name="apple_music_style_letter">Apple Music V2 (Letter by Letter)</string>
-    <string name="vivimusic_1">Vivimusic (Fluid)</string>
+    <string name="vivimusic_1">Spoty (Fluid)</string>
     <string name="apple_music_lyrics_blur">Apple Music Lyrics Blur</string>
     <string name="apple_music_lyrics_blur_desc">Apply blur to inactive lyrics lines for a premium focus effect</string>
     <string name="lyrics_v2_fluid">Lyrics V2 (Fluid)</string>
@@ -961,7 +961,7 @@
 
     <!-- Onboarding -->
     <string name="welcome_to">Welcome to</string>
-    <string name="welcome_to_vivi">Welcome to Vivi</string>
+    <string name="welcome_to_vivi">Welcome to Spoty</string>
     <string name="accessibility">Accessibility</string>
     <string name="welcome_preparing_subtitle">Let\'s get everything ready for you.</string>
     <string name="get_started">Get Started</string>
