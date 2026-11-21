@@ -58,6 +58,7 @@ import com.music.vivi.ui.screens.DetailedListeningHistoryScreen
 import com.music.vivi.ui.screens.settings.StorageSettings
 import com.music.vivi.ui.screens.settings.DuplicateSongsScreen
 import com.music.vivi.ui.screens.settings.ThemeMarketplaceScreen
+import com.music.vivi.ui.screens.settings.DesignStudioSettings
 import com.music.vivi.ui.screens.settings.ThemeSettings
 import com.music.vivi.ui.screens.settings.AiSettings
 import com.music.vivi.ui.screens.settings.integrations.DiscordSettings
@@ -414,6 +415,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/appearance/theme_marketplace") {
         ThemeMarketplaceScreen(navController, scrollBehavior)
+    }
+
+    composable("settings/appearance/design_studio") {
+        DesignStudioSettings(navController, scrollBehavior)
     }
 
     composable("settings/equalizer") {

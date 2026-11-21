@@ -128,6 +128,17 @@
     <string name="duplicate_song_duration">%1$d:%2$02d</string>
     <string name="theme_marketplace">Theme marketplace</string>
     <string name="theme_marketplace_by_author">by %1$s</string>
+    <string name="design_studio">Design Studio</string>
+    <string name="design_studio_preview_title">Live Preview</string>
+    <string name="design_studio_preview_subtitle">This card updates as you change settings below</string>
+    <string name="design_studio_corner_style">Corner Style</string>
+    <string name="design_studio_border_thickness">Border Thickness</string>
+    <string name="design_studio_shadow_level">Shadow Level</string>
+    <string name="design_studio_blur_intensity">Blur Intensity</string>
+    <string name="design_studio_transparency">Transparency</string>
+    <string name="design_studio_grain_texture">Grain Texture</string>
+    <string name="design_studio_ambient_glow">Ambient Glow</string>
+    <string name="design_studio_reset">Reset to Defaults</string>
     <string name="more_options">More options</string>
     <string name="more_label">More</string>
     <string name="releases_for_you">Releases for you</string>

@@ -1123,6 +1123,13 @@ fun AppearanceSettings(
                 )
                 add(
                     Material3SettingsItem(
+                        icon = painterResource(R.drawable.contrast),
+                        title = { Text(stringResource(R.string.design_studio)) },
+                        onClick = { navController.navigate("settings/appearance/design_studio") }
+                    )
+                )
+                add(
+                    Material3SettingsItem(
                         icon = painterResource(R.drawable.alphabet_cyrillic),
                         title = { Text(stringResource(R.string.app_font)) },
                         description = {
