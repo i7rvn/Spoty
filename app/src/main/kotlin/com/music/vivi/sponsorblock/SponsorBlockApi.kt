@@ -62,7 +62,7 @@ object SponsorBlockApi {
         try {
             val request = Request.Builder()
                 .url(httpUrl)
-                .addHeader("User-Agent", "vivi-music/1.0")
+                .addHeader("User-Agent", "Spoty/1.0")
                 .get()
                 .build()
 

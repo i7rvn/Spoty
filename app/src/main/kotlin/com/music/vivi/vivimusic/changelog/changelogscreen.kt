@@ -181,10 +181,20 @@ fun ChangelogScreen(
         coroutineScope.launch(Dispatchers.IO) {
             try {
                 var cachedText: String? = null
+                val cacheFile = File(context.filesDir, "changelog_cache_$tag.json")
                 try {
-                    val cacheFile = File(context.filesDir, "changelog_cache_$tag.json")
-                    if (cacheFile.exists()) cachedText = cacheFile.readText()
-                } catch (e: Exception) { }
+                    if (cacheFile.exists()) {
+                        val text = cacheFile.readText()
+                        // Validate the cache actually parses before trusting it; a stale or
+                        // corrupted cache file from an older build should never block a fresh fetch.
+                        parseChangelogJson(JSONObject(text))
+                        cachedText = text
+                    }
+                } catch (e: Exception) {
+                    Log.w("ChangelogScreen", "Cached changelog for $tag is invalid, deleting and refetching: ${e.message}")
+                    try { cacheFile.delete() } catch (_: Exception) { }
+                    cachedText = null
+                }
 
                 if (cachedText != null) {
                     val parsed = parseChangelogJson(JSONObject(cachedText))
@@ -199,7 +209,10 @@ fun ChangelogScreen(
                 } else {
                     val changelogUrl = URL("https://github.com/i7rvn/Spoty/releases/download/$tag/changelog.json")
                     val connection = changelogUrl.openConnection() as HttpURLConnection
-                    connection.setRequestProperty("User-Agent", "ViviMusic-Changelog-App")
+                    connection.instanceFollowRedirects = true
+                    connection.connectTimeout = 10000
+                    connection.readTimeout = 10000
+                    connection.setRequestProperty("User-Agent", "Spoty-Changelog-App")
                     connection.setRequestProperty("Accept", "application/json")
                     
                     if (connection.responseCode == 200) {
@@ -241,7 +254,7 @@ fun ChangelogScreen(
             try {
                 val releasesUrl = URL("https://api.github.com/repos/i7rvn/Spoty/releases")
                 val connection = releasesUrl.openConnection() as HttpURLConnection
-                connection.setRequestProperty("User-Agent", "ViviMusic-Changelog-App")
+                connection.setRequestProperty("User-Agent", "Spoty-Changelog-App")
                 connection.setRequestProperty("Accept", "application/vnd.github+json")
                 
                 if (connection.responseCode == 200) {
