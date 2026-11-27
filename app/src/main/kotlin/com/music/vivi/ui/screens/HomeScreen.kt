@@ -115,6 +115,10 @@ import com.music.vivi.constants.InnerTubeCookieKey
 import com.music.vivi.constants.ListItemHeight
 import com.music.vivi.constants.ListThumbnailSize
 import com.music.vivi.constants.RandomizeHomeOrderKey
+import com.music.vivi.constants.HomeHiddenSectionsKey
+import com.music.vivi.constants.HomeCustomOrderEnabledKey
+import com.music.vivi.constants.HomeCustomOrderKey
+import com.music.vivi.constants.HomePinKeepListeningKey
 import com.music.vivi.constants.SmallGridThumbnailHeight
 import com.music.vivi.constants.ThumbnailCornerRadius
 import com.music.vivi.db.entities.Album
@@ -376,6 +380,10 @@ fun HomeScreen(
     val accountImageUrl by viewModel.accountImageUrl.collectAsState()
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
     val (randomizeHomeOrder) = rememberPreference(RandomizeHomeOrderKey, true)
+    val (homeHiddenSections) = rememberPreference(HomeHiddenSectionsKey, defaultValue = emptySet())
+    val (homeCustomOrderEnabled) = rememberPreference(HomeCustomOrderEnabledKey, defaultValue = false)
+    val (homeCustomOrderRaw) = rememberPreference(HomeCustomOrderKey, defaultValue = "")
+    val (homePinKeepListening) = rememberPreference(HomePinKeepListeningKey, defaultValue = false)
 
     val shouldShowWrappedCard by viewModel.showWrappedCard.collectAsState()
     val wrappedState by viewModel.wrappedManager.state.collectAsState()
@@ -591,6 +599,10 @@ fun HomeScreen(
     val quickPicksLocalized = stringResource(R.string.quick_picks)
     val homeSections = remember(
         randomizeHomeOrder,
+        homeHiddenSections,
+        homeCustomOrderEnabled,
+        homeCustomOrderRaw,
+        homePinKeepListening,
         randomSeed,
         selectedChip,
         speedDialItems,
@@ -702,8 +714,41 @@ fun HomeScreen(
             it == HomeSection.QuickPicks || (it is HomeSection.HomePageSection && isYouTubeQuickPicksSection(homePage?.sections?.getOrNull(it.index)))
         }
         val qpItems = deduplicatedList.filter(isQuickPicksSection)
-        if (qpItems.isNotEmpty()) qpItems + deduplicatedList.filterNot(isQuickPicksSection)
-        else deduplicatedList
+        val pinnedQuickPicksList =
+            if (qpItems.isNotEmpty()) qpItems + deduplicatedList.filterNot(isQuickPicksSection)
+            else deduplicatedList
+
+        // Batch 2 (Module B): hide/show sections and optional manual reordering.
+        // Defaults (no hidden sections, custom order off, no pin) leave this identical
+        // to the existing behavior above.
+        val visibleList = if (homeHiddenSections.isEmpty()) {
+            pinnedQuickPicksList
+        } else {
+            pinnedQuickPicksList.filterNot { it.id in homeHiddenSections }
+        }
+
+        val orderedList = if (homeCustomOrderEnabled && homeCustomOrderRaw.isNotBlank()) {
+            val customOrderIds = homeCustomOrderRaw.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+            val indexOf = customOrderIds.withIndex().associate { (index, id) -> id to index }
+            visibleList.sortedBy { indexOf[it.id] ?: Int.MAX_VALUE }
+        } else {
+            visibleList
+        }
+
+        if (homePinKeepListening) {
+            val isKeepListening: (HomeSection) -> Boolean = { it == HomeSection.KeepListening }
+            val keepListeningItems = orderedList.filter(isKeepListening)
+            val restItems = orderedList.filterNot(isKeepListening)
+            if (keepListeningItems.isNotEmpty()) {
+                val qpFirst = restItems.filter(isQuickPicksSection)
+                val remaining = restItems.filterNot(isQuickPicksSection)
+                qpFirst + keepListeningItems + remaining
+            } else {
+                orderedList
+            }
+        } else {
+            orderedList
+        }
     }
 
     LaunchedEffect(quickPicks) {

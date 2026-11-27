@@ -201,6 +201,13 @@ val CrossfadeDurationKey = floatPreferencesKey("crossfadeDuration")
 val CrossfadeGaplessKey = booleanPreferencesKey("crossfadeGapless")
 val ShakeToShuffleKey = booleanPreferencesKey("shakeToShuffle")
 
+// Home Screen customization (Batch 2 - Module B)
+val HomeHiddenSectionsKey = stringSetPreferencesKey("homeHiddenSections")
+val HomeCustomOrderEnabledKey = booleanPreferencesKey("homeCustomOrderEnabled")
+val HomeCustomOrderKey = stringPreferencesKey("homeCustomOrder")
+val HomeCompactModeKey = booleanPreferencesKey("homeCompactMode")
+val HomePinKeepListeningKey = booleanPreferencesKey("homePinKeepListening")
+
 // Design Studio (Batch 1 - Module A design tokens)
 val DesignCornerStyleKey = stringPreferencesKey("designCornerStyle")
 val DesignBorderThicknessKey = stringPreferencesKey("designBorderThickness")
